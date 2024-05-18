@@ -9,7 +9,6 @@ socket.on('disconnect', () => {
 });
 
 socket.on('gameStateUpdate', (data) => {
-  console.log('Received gameStateUpdate', data);
   updateGameState(data);
 });
 

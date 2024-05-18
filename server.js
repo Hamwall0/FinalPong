@@ -27,7 +27,7 @@ let gameState = {
 setInterval(() => {
   gameState = moveBall(gameState.ball, gameState.paddle1, gameState.paddle2, gameState.map);
   io.emit('gameStateUpdate', gameState);
-}, 100);
+}, 25);
 
 io.on("connection", (socket) => {
   console.log("A user just connected.", socket.id);
@@ -35,7 +35,6 @@ io.on("connection", (socket) => {
   socket.emit('gameStateUpdate', gameState);
 
   socket.on('gameState', (data) => {
-    console.log('Received gameStateUpdate', data);
     gameState = data; // Update the server's game state with received data
     io.emit('gameStateUpdate', gameState);
   });
