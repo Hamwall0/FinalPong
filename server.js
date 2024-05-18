@@ -16,18 +16,25 @@ server.listen(port, () => {
 });
 
 const moveBall = require('./ball.js');
-
+const { score1, score2 } = require('./ball.js');
+// io.emit (scores,score1,score2)
 let gameState = {
   ball: { top: "0px", left: "0px", diameter: 20 },
-  paddle1: { top: "50%", height: 100, left: "100px", width: 10 },
-  paddle2: { top: "50%", height: 100, left: "500px", width: 10 },
-  map: { height: 600, width: 800 }
+  paddle1: { top: "50%", height: 100, left: "20px", width: 10},
+  paddle2: { top: "50%", height: 100, left: "570px", width: 10,},
+  map: { height: 600, width: 800 },
+  score1: score1, // Include score1 here
+  score2: score2 // Include score2 here
 };
 
 setInterval(() => {
   gameState = moveBall(gameState.ball, gameState.paddle1, gameState.paddle2, gameState.map);
+  // Update scores
+  gameState.score1 = score1;
+  gameState.score2 = score2;
   io.emit('gameStateUpdate', gameState);
 }, 25);
+
 
 io.on("connection", (socket) => {
   console.log("A user just connected.", socket.id);

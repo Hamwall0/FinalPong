@@ -10,7 +10,10 @@ socket.on('disconnect', () => {
 
 socket.on('gameStateUpdate', (data) => {
   updateGameState(data);
+  // Update score display
+  
 });
+
 
 const map = document.querySelector(".map");
 const mapHeight = map.clientHeight;
@@ -32,8 +35,6 @@ map.appendChild(paddle_2);
 
 document.addEventListener("keydown", handleKeyDown);
 
-let score1 = document.getElementById("score_1");
-let score2 = document.getElementById("score_2");
 const ball = document.querySelector(".ball");
 ball.style.position = "absolute";
 
@@ -135,4 +136,8 @@ function updateGameState(data) {
 
   paddle_2.style.top = paddle2Data.top;
   paddle_2.style.left = paddle2Data.left;
+
+  document.getElementById('score_1').innerText = data.score1;
+  document.getElementById('score_2').innerText = data.score2;
 }
+
