@@ -1,0 +1,47 @@
+.paddle {
+    width: 10px; 
+    height: 150px; 
+    background-color: black; 
+    position: absolute; 
+}
+
+.paddle_1 {
+    left: 100px; 
+    bottom: 100px; 
+}
+
+.paddle_2 {
+    left: 500px; 
+    bottom: 100px; 
+}
+
+.ball {
+    width: 20px; 
+    height: 20px;
+    border-radius: 50%; 
+    background-color: black; 
+    position: absolute;
+    left: 300px;
+    bottom: 300px;
+}
+
+.map{
+    position: relative;
+    width: 600px; 
+    height: 400px; 
+    background-color: rgb(255, 0, 0); 
+    margin: 0 auto; 
+}
+.score {
+    position: absolute;
+    color: rgb(0, 0, 0);
+    font-size: 24px;
+}
+#score_1 {
+    top: 10px;
+    left: 50px;
+}
+#score_2 {
+    top: 10px;
+    right: 50px;
+}
