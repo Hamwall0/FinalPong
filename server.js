@@ -17,18 +17,27 @@ server.listen(port, () => {
 
 const moveBall = require('./ball.js');
 
+let gameState = {
+  ball: { top: "0px", left: "0px", diameter: 20 },
+  paddle1: { top: "50%", height: 100, left: "100px", width: 10 },
+  paddle2: { top: "50%", height: 100, left: "500px", width: 10 },
+  map: { height: 600, width: 800 }
+};
+
+setInterval(() => {
+  gameState = moveBall(gameState.ball, gameState.paddle1, gameState.paddle2, gameState.map);
+  io.emit('gameStateUpdate', gameState);
+}, 100);
+
 io.on("connection", (socket) => {
   console.log("A user just connected.", socket.id);
-  
+
+  socket.emit('gameStateUpdate', gameState);
+
   socket.on('gameState', (data) => {
-    const ballPosition = data.ball;
-    const paddle1Position = data.paddle1;
-    const paddle2Position = data.paddle2;
-    const mapDimensions = data.map;
-
-    const updatedGameState = moveBall(ballPosition, paddle1Position, paddle2Position, mapDimensions);
-
-    socket.broadcast.emit('gameStateUpdate', updatedGameState);
+    console.log('Received gameStateUpdate', data);
+    gameState = data; // Update the server's game state with received data
+    io.emit('gameStateUpdate', gameState);
   });
 
   socket.on("disconnect", () => {

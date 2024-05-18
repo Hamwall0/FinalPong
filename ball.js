@@ -1,5 +1,5 @@
-const randomSpeed = Math.random() * 5 + 2;
-const randomAngle = Math.random() * Math.PI * 2;
+const randomSpeed = Math.random() * 15 + 10;
+const randomAngle = Math.random() * Math.PI * 7;
 
 let dx = Math.cos(randomAngle) * randomSpeed;
 let dy = Math.sin(randomAngle) * randomSpeed;
@@ -36,11 +36,11 @@ function moveBall(ball, paddle_1, paddle_2, map) {
   if (ballLeft < 0) {
     ballLeft = 0;
     dx = -dx;
-    score1.innerText = parseInt(score1.innerText) + 1;
+    // score1.innerText = parseInt(score1.innerText) + 1;
   } else if (ballLeft > mapWidth - ballHeight) {
     ballLeft = mapWidth - ballHeight;
     dx = -dx;
-    score2.innerText = parseInt(score2.innerText) + 1;
+    // score2.innerText = parseInt(score2.innerText) + 1;
   }
 
   if (
@@ -60,7 +60,7 @@ function moveBall(ball, paddle_1, paddle_2, map) {
     ballLeft = paddle_2Left - ballHeight - 1;
     dx = -dx;
   }
-
+  
   return {
     ball: {
       top: ballTop + "px",
@@ -84,6 +84,8 @@ function moveBall(ball, paddle_1, paddle_2, map) {
       width: mapWidth
     }
   };
+  
 }
 
+// setInterval(moveBall(),100)
 module.exports = moveBall;

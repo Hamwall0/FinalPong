@@ -1,11 +1,19 @@
 const socket = io();
 
+socket.on('connect', () => {
+  console.log('Connected to server');
+});
+
+socket.on('disconnect', () => {
+  console.log('Disconnected from server');
+});
+
 socket.on('gameStateUpdate', (data) => {
+  console.log('Received gameStateUpdate', data);
   updateGameState(data);
 });
 
 const map = document.querySelector(".map");
-const mapStyle = getComputedStyle(map);
 const mapHeight = map.clientHeight;
 const mapWidth = map.clientWidth;
 
