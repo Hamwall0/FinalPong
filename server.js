@@ -8,6 +8,8 @@ let app = express();
 let server = http.createServer(app);
 let io = socketIO(server);
 
+let players = [];
+
 const publicPath = path.join(__dirname, "/public");
 app.use(express.static(publicPath));
 
@@ -30,12 +32,22 @@ let gameState = {
 setInterval(() => {
   gameState = moveBall(gameState.ball, gameState.paddle1, gameState.paddle2, gameState.map);
   io.emit('gameStateUpdate', gameState);
-
 }, 25);
+
 
 
 io.on("connection", (socket) => {
   console.log("A user just connected.", socket.id);
+  
+  let role;
+  if (players.length < 2) {
+    role = players.length === 0 ? 'player1' : 'player2';
+    players.push({ id: socket.id, role: role });
+  } else {
+    role = 'spectator';
+  }
+  
+  socket.emit('assignRole', role);
 
   socket.emit('gameStateUpdate', gameState);
 
@@ -45,6 +57,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("A user has disconnected.");
+    console.log("A user has disconnected.", socket.id);
+    players = players.filter(player => player.id !== socket.id);
   });
 });
+

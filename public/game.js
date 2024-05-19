@@ -8,6 +8,12 @@ socket.on('disconnect', () => {
   console.log('Disconnected from server');
 });
 
+let role;
+
+socket.on('assignRole', (assignedRole) => {
+  role = assignedRole;
+  console.log(`Assigned role: ${role}`);
+});
 
 let score1 = 0
 let score2 = 0
@@ -75,34 +81,40 @@ socket.emit('gameState', {
 });
 
 function handleKeyDown(event) {
+  if (role === 'spectator') return;
+
   const key = event.key;
   const paddle_1Style = getComputedStyle(paddle_1);
   const paddle_1Height = paddle_1.clientHeight;
   const paddle_2Style = getComputedStyle(paddle_2);
   const paddle_2Height = paddle_2.clientHeight;
 
-  if (key.toLowerCase() === "w") {
-    const currentTop = parseInt(paddle_1Style.top);
-    const newTop = Math.max(0, currentTop - mapHeight * 0.06);
-    paddle_1.style.top = newTop + "px";
+  if (role === 'player1') {
+    if (key.toLowerCase() === "w") {
+      const currentTop = parseInt(paddle_1Style.top);
+      const newTop = Math.max(0, currentTop - mapHeight * 0.06);
+      paddle_1.style.top = newTop + "px";
+    }
+
+    if (key.toLowerCase() === "s") {
+      const currentTop = parseInt(paddle_1Style.top);
+      const newTop = Math.min(mapHeight - paddle_1Height, currentTop + mapHeight * 0.06);
+      paddle_1.style.top = newTop + "px";
+    }
   }
 
-  if (key.toLowerCase() === "s") {
-    const currentTop = parseInt(paddle_1Style.top);
-    const newTop = Math.min(mapHeight - paddle_1Height, currentTop + mapHeight * 0.06);
-    paddle_1.style.top = newTop + "px";
-  }
+  if (role === 'player2') {
+    if (key === "ArrowUp") {
+      const currentTop = parseInt(paddle_2Style.top);
+      const newTop = Math.max(0, currentTop - mapHeight * 0.06);
+      paddle_2.style.top = newTop + "px";
+    }
 
-  if (key === "ArrowUp") {
-    const currentTop = parseInt(paddle_2Style.top);
-    const newTop = Math.max(0, currentTop - mapHeight * 0.06);
-    paddle_2.style.top = newTop + "px";
-  }
-
-  if (key === "ArrowDown") {
-    const currentTop = parseInt(paddle_2Style.top);
-    const newTop = Math.min(mapHeight - paddle_2Height, currentTop + mapHeight * 0.06);
-    paddle_2.style.top = newTop + "px";
+    if (key === "ArrowDown") {
+      const currentTop = parseInt(paddle_2Style.top);
+      const newTop = Math.min(mapHeight - paddle_2Height, currentTop + mapHeight * 0.06);
+      paddle_2.style.top = newTop + "px";
+    }
   }
 
   socket.emit('gameState', {
@@ -129,6 +141,7 @@ function handleKeyDown(event) {
     }
   });
 }
+
 
 function updateGameState(data) {
   const ballData = data.ball;
