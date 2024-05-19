@@ -1,5 +1,5 @@
 const randomSpeed = Math.random() * 15 + 10;
-const randomAngle = Math.random() * Math.PI * 2; // Corrected angle calculation
+const randomAngle = Math.random() * Math.PI; // Corrected angle calculation
 
 let dx = 0
 let dy = 0
@@ -37,9 +37,10 @@ function moveBall(ball, paddle_1, paddle_2, map, startGame) {
   if(score1 == 9 || score2 ==9 ){
     dy = 0 
     dx = 0
+    
+    
     score2 = 0 
     score1 =0
-    
   }
   
   if (ballTop < 0) {

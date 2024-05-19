@@ -13,6 +13,37 @@ app.use(express.static(publicPath));
 server.listen(port, () => {
   console.log(`Server is up on port ${port}.`);
 });
+const mysql = require('mysql');
+
+// Create a connection to the MySQL database
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'pong_login'
+});
+
+// Connect to the database
+connection.connect((err) => {
+  if (err) {
+    console.error('Error connecting to database:', err);
+    return;
+  }
+  console.log('Connected to database');
+});
+
+// Function to update victories for a player
+function updateVictories(playerId) {
+  const query = `UPDATE players SET victories = victories + 1 WHERE id = ?`;
+  console.log("Database!!")
+  connection.query(query, [playerId], (err, results) => {
+    if (err) {
+      console.error('Error updating victories:', err);
+      return;
+    }
+    console.log('Victories updated for player with id', playerId);
+  });
+}
 
 const moveBall = require('./ball.js');
 const { score1, score2 } = require('./ball.js');
@@ -39,6 +70,11 @@ setInterval(() => {
     startGame = false;
     if (gameState.score1 == 9 || gameState.score2 == 9) {
       console.log("Game Over");
+      if (gameState.score1 === 9) {
+        updateVictories(1); // Assuming player 1's ID is 1
+      } else if (gameState.score2 === 9) {
+        updateVictories(2); // Assuming player 2's ID is 2
+      }
       io.emit('gameOver'); // Emit a signal indicating game over
       player1Ready = false
       player2Ready = false
