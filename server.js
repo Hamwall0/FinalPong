@@ -29,10 +29,8 @@ let gameState = {
 
 setInterval(() => {
   gameState = moveBall(gameState.ball, gameState.paddle1, gameState.paddle2, gameState.map);
-  // Update scores
-  gameState.score1 = score1;
-  gameState.score2 = score2;
   io.emit('gameStateUpdate', gameState);
+
 }, 25);
 
 

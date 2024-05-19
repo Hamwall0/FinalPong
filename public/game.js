@@ -8,10 +8,17 @@ socket.on('disconnect', () => {
   console.log('Disconnected from server');
 });
 
+
+let score1 = 0
+let score2 = 0
 socket.on('gameStateUpdate', (data) => {
   updateGameState(data);
-  // Update score display
-  
+  // Update score display dynamically
+  score1 = data.score1
+  score2 = data.score2
+  // console.log(score1, score2)
+  document.getElementById('score_2').innerText = parseInt(score2);
+  document.getElementById('score_1').innerText = parseInt(score1);
 });
 
 
@@ -136,8 +143,7 @@ function updateGameState(data) {
 
   paddle_2.style.top = paddle2Data.top;
   paddle_2.style.left = paddle2Data.left;
-
-  document.getElementById('score_1').innerText = data.score1;
-  document.getElementById('score_2').innerText = data.score2;
+  // console.log(data.score1, data.score2)
+  
 }
 

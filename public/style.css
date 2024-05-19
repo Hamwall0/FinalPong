@@ -37,11 +37,11 @@
     color: rgb(0, 0, 0);
     font-size: 24px;
 }
-#score_1 {
+#score_2 {
     top: 10px;
     left: 50px;
 }
-#score_2 {
+#score_1 {
     top: 10px;
     right: 50px;
 }
