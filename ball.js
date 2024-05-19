@@ -1,11 +1,12 @@
 const randomSpeed = Math.random() * 15 + 10;
 const randomAngle = Math.random() * Math.PI * 2; // Corrected angle calculation
-let dx = Math.cos(randomAngle) * randomSpeed;
-let dy = Math.sin(randomAngle) * randomSpeed;
-let score1 = 0
-let score2 = 0 
 
-function moveBall(ball, paddle_1, paddle_2, map) {
+let dx = 0
+let dy = 0
+let score1 = 0
+let score2 = 0
+let gameStart = false
+function moveBall(ball, paddle_1, paddle_2, map, startGame) {
   
   let ballTop = parseInt(ball.top);
   let ballLeft = parseInt(ball.left);
@@ -24,6 +25,13 @@ function moveBall(ball, paddle_1, paddle_2, map) {
   const mapHeight = map.height;
   const mapWidth = map.width;
 
+  let gameStart = startGame
+
+  if (gameStart){
+    dx = dx = Math.cos(randomAngle) * randomSpeed;
+    dy = dy = Math.sin(randomAngle) * randomSpeed;
+    gameStart = false
+  }
   ballTop += dy;
   ballLeft += dx;
   if(score1 == 9 || score2 ==9 ){

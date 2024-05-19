@@ -45,3 +45,14 @@
     top: 10px;
     right: 50px;
 }
+
+/* Apply styles to the waiting message */
+#waitingMessage {
+    font-size: 24px; /* Set the font size */
+    color: #333; /* Set the text color */
+    text-align: center; /* Align the text to the center */
+    margin-top:30px; /* Add top margin to create space */
+  }
+  
+  /* Add additional styles as needed */
+  

@@ -2,7 +2,7 @@ const socket = io();
 
 let role;
 let paddle_1, paddle_2, ball;
-let aru = false
+
 socket.on('connect', () => {
   console.log('Connected to server');
 });
@@ -11,76 +11,63 @@ socket.on('disconnect', () => {
   console.log('Disconnected from server');
 });
 
-
-socket.on('gameOver', () => {
-  console.log("recived Game over")
-  mainMenu.showSignInMenu(); // Show the main menu when game over signal is received
-});
-
-let player1Ready = false;
-let player2Ready = false;
-
 socket.on('assignRole', (assignedRole) => {
   role = assignedRole;
   console.log(`Assigned role: ${role}`);
 });
 
-socket.on('gameStateUpdate', (data) => {
-  // Update game state only if both players are ready
-  if (player1Ready && player2Ready) {
-    updateGameState(data);
-    document.getElementById('score_1').innerText = parseInt(data.score1);
-    document.getElementById('score_2').innerText = parseInt(data.score2);
-  }
+socket.on('gameOver', () => {
+  console.log("Received Game Over");
+  hideGameObjects();
+  mainMenu.showSignInMenu(); // Show the main menu when game over signal is received
 });
-aru = prompt("ready y/n")
-if (aru == "y"){
-socket.emit('ready', (playerRole) => {
-  if (playerRole === 'player1') {
-    player1Ready = true;
-  } else if (playerRole === 'player2') {
-    player2Ready = true;
-  }
-});}
 
-socket.on('startGame', (startGame) => {
-  if (startGame = true){
-    startGame()
+socket.on('gameStateUpdate', (data) => {
+  if (ball && paddle_1 && paddle_2) {
+    updateGameState(data);
   }
+  document.getElementById('score_1').innerText = parseInt(data.score1);
+  document.getElementById('score_2').innerText = parseInt(data.score2);
 });
+
+let gameExist = false;
 
 function startGame() {
-  const map = document.querySelector(".map");
-  const mapHeight = map.clientHeight;
-  const mapWidth = map.clientWidth;
+  if (!gameExist) {
+    const map = document.querySelector(".map");
+    const mapHeight = map.clientHeight;
+    const mapWidth = map.clientWidth;
 
-  paddle_1 = document.createElement("div");
-  paddle_1.classList.add("paddle", "paddle_1");
-  paddle_1.style.position = "absolute";
-  paddle_1.style.top = "50%";
-  paddle_1.style.left = "100px";
-  map.appendChild(paddle_1);
+    paddle_1 = document.createElement("div");
+    paddle_1.classList.add("paddle", "paddle_1");
+    paddle_1.style.position = "absolute";
+    paddle_1.style.top = "50%";
+    paddle_1.style.left = "100px";
+    map.appendChild(paddle_1);
 
-  paddle_2 = document.createElement("div");
-  paddle_2.classList.add("paddle", "paddle_2");
-  paddle_2.style.position = "absolute";
-  paddle_2.style.top = "50%";
-  paddle_2.style.left = mapWidth - 100 + "px";
-  map.appendChild(paddle_2);
+    paddle_2 = document.createElement("div");
+    paddle_2.classList.add("paddle", "paddle_2");
+    paddle_2.style.position = "absolute";
+    paddle_2.style.top = "50%";
+    paddle_2.style.left = mapWidth - 100 + "px";
+    map.appendChild(paddle_2);
 
-  document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
 
-  ball = document.querySelector(".ball");
-  ball.style.position = "absolute";
+    ball = document.querySelector(".ball");
+    ball.style.position = "absolute";
 
-  const initialTop = Math.random() * (mapHeight - ball.clientHeight);
-  const initialLeft = Math.random() * (mapWidth - ball.clientWidth);
-  ball.style.top = initialTop + "px";
-  ball.style.left = initialLeft + "px";
+    // const initialTop = Math.random() * (mapHeight - ball.clientHeight);
+    // const initialLeft = Math.random() * (mapWidth - ball.clientWidth);
+    ball.style.top = initialTop + "px";
+    ball.style.left = initialLeft + "px";
 
-  emitGameState();
+    gameExist = true;
+    emitGameState();
+  } else {
+    showGameObjects();
+  }
 }
-
 
 function handleKeyDown(event) {
   if (role === 'spectator') return;
@@ -150,12 +137,28 @@ function emitGameState() {
 }
 
 function updateGameState(data) {
-  ball.style.top = data.ball.top;
-  ball.style.left = data.ball.left;
+  if (ball && paddle_1 && paddle_2) {
+    ball.style.top = data.ball.top;
+    ball.style.left = data.ball.left;
 
-  paddle_1.style.top = data.paddle1.top;
-  paddle_1.style.left = data.paddle1.left;
+    paddle_1.style.top = data.paddle1.top;
+    paddle_1.style.left = data.paddle1.left;
 
-  paddle_2.style.top = data.paddle2.top;
-  paddle_2.style.left = data.paddle2.left;
+    paddle_2.style.top = data.paddle2.top;
+    paddle_2.style.left = data.paddle2.left;
+  } else {
+    console.error("Ball or paddles are not defined.");
+  }
+}
+
+function hideGameObjects() {
+  if (paddle_1) paddle_1.style.display = 'none';
+  if (paddle_2) paddle_2.style.display = 'none';
+  // if (ball) ball.style.display = 'none';
+}
+
+function showGameObjects() {
+  if (paddle_1) paddle_1.style.display = 'block';
+  if (paddle_2) paddle_2.style.display = 'block';
+  // if (ball) ball.style.display = 'block';
 }

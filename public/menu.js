@@ -88,7 +88,9 @@ class GameMenu extends Menu {
       document.querySelector('.map').style.display = 'block';
       mainMenu.hide();
       socket.emit('ready');
-      // startGame();
+      console.log("Före")
+      startGame();
+      console.log("efter")
     });
 
     document.getElementById('viewScoreboard').addEventListener('click', () => {
