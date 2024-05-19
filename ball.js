@@ -27,7 +27,14 @@ function moveBall(ball, paddle_1, paddle_2, map) {
 
   ballTop += dy;
   ballLeft += dx;
-
+  if(score1 == 9 || score2 ==9 ){
+    dy = 0 
+    dx = 0
+    score2 = 0 
+    score1 =0
+    
+  }
+  
   if (ballTop < 0) {
     ballTop = 0;
     dy = -dy;
@@ -42,18 +49,13 @@ function moveBall(ball, paddle_1, paddle_2, map) {
     dx = Math.cos(randomAngle) * randomSpeed; // Reset ball direction and speed
     dy = Math.sin(randomAngle) * randomSpeed;
     score1 += 1
-    if (score1 == 9){
-      stop = 1
-    }
+
   } else if (ballLeft > mapWidth - ballHeight) {
     ballLeft = mapWidth / 2; // Reset ball position
     ballTop = mapHeight / 2;
     dx = Math.cos(randomAngle) * randomSpeed; // Reset ball direction and speed
     dy = Math.sin(randomAngle) * randomSpeed;
     score2 += 1
-    if (score2 == 9){
-      stop = 1
-    }
     
   }
   // console.log(score1,score2)
@@ -74,10 +76,8 @@ function moveBall(ball, paddle_1, paddle_2, map) {
     ballLeft = paddle_2Left - ballHeight - 1;
     dx = -dx;
   }
-  if(score1 == 9 || score2 ==9 ){
-    dy = 0 
-    dx = 0
-  }
+  // Win condition
+  
 
   return {
     ball: {
