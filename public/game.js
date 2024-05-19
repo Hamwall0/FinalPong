@@ -16,9 +16,13 @@ socket.on('assignRole', (assignedRole) => {
   console.log(`Assigned role: ${role}`);
 });
 
+//let gameActive = true; // Initialize gameActive as true
+
 socket.on('gameOver', () => {
-  console.log("recived Game over")
+  document.querySelector('.map').style.display = 'none'; // Hide the map
+  // document.querySelector('paddel_1').style.display = 'none';
   mainMenu.showSignInMenu(); // Show the main menu when game over signal is received
+  //gameActive = false; // Set gameActive to false when game is over
 });
 
 socket.on('gameStateUpdate', (data) => {
@@ -36,27 +40,19 @@ function startGame() {
   paddle_1.classList.add("paddle", "paddle_1");
   paddle_1.style.position = "absolute";
   paddle_1.style.top = "50%";
-  paddle_1.style.left = "100px";
+  paddle_1.style.left = "100px"; // Adjust this value as needed
   map.appendChild(paddle_1);
 
   paddle_2 = document.createElement("div");
   paddle_2.classList.add("paddle", "paddle_2");
   paddle_2.style.position = "absolute";
   paddle_2.style.top = "50%";
-  paddle_2.style.left = mapWidth - 100 + "px";
+  paddle_2.style.left = mapWidth - 100 + "px"; // Adjust this value as needed
   map.appendChild(paddle_2);
 
-  document.addEventListener("keydown", handleKeyDown);
-
-  ball = document.querySelector(".ball");
-  ball.style.position = "absolute";
-
-  const initialTop = Math.random() * (mapHeight - ball.clientHeight);
-  const initialLeft = Math.random() * (mapWidth - ball.clientWidth);
-  ball.style.top = initialTop + "px";
-  ball.style.left = initialLeft + "px";
-
-  emitGameState();
+  // Ensure that the paddles are visible
+  paddle_1.style.display = "block";
+  paddle_2.style.display = "block";
 }
 
 function handleKeyDown(event) {

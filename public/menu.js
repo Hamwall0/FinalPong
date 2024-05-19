@@ -71,6 +71,7 @@ class SignUpMenu extends Menu {
   }
 }
 
+
 class GameMenu extends Menu {
   render() {
     return `
@@ -87,12 +88,17 @@ class GameMenu extends Menu {
       // Hide menu and show game
       document.querySelector('.map').style.display = 'block';
       mainMenu.hide();
-      startGame();
+      socket.emit('playerReady');
     });
 
     document.getElementById('viewScoreboard').addEventListener('click', () => {
       // Handle view scoreboard
       mainMenu.showScoreboard();
+    });
+
+    // Listen for the startGame event from the server
+    socket.on('startGame', () => {
+      startGame();
     });
   }
 }
