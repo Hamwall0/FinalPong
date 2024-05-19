@@ -40,6 +40,8 @@ setInterval(() => {
     if (gameState.score1 == 9 || gameState.score2 == 9) {
       console.log("Game Over");
       io.emit('gameOver'); // Emit a signal indicating game over
+      player1Ready = false
+      player2Ready = false
       
     }
     io.emit('gameStateUpdate', gameState);
@@ -74,6 +76,7 @@ io.on("connection", (socket) => {
       startGame = true;
       console.log("Players Ready, Game Starting");
       io.emit('startGame', startGame);
+      
     }
   });
 
