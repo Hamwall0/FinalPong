@@ -1,11 +1,10 @@
 const randomSpeed = Math.random() * 15 + 10;
 const randomAngle = Math.random() * Math.PI * 2; // Corrected angle calculation
-
 let dx = Math.cos(randomAngle) * randomSpeed;
 let dy = Math.sin(randomAngle) * randomSpeed;
 let score1 = 0
 let score2 = 0 
-let stop = 0
+
 function moveBall(ball, paddle_1, paddle_2, map) {
   
   let ballTop = parseInt(ball.top);
