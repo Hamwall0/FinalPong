@@ -1,3 +1,5 @@
+socket = io();
+
 class Menu {
   constructor(mainElement) {
     this.mainElement = mainElement;
@@ -36,6 +38,8 @@ class SignInMenu extends Menu {
       .addEventListener("submit", (event) => {
         event.preventDefault();
         mainMenu.showGameMenu();
+        let username = document.getElementById("newUsername").value;
+        let password = document.getElementById("newPassword").value;
       });
 
     document.getElementById("goToSignUp").addEventListener("click", () => {
@@ -66,24 +70,30 @@ class SignUpMenu extends Menu {
         event.preventDefault();
         let username = document.getElementById("newUsername").value;
         let password = document.getElementById("newPassword").value;
-
-        fetch("users.php", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: `username=${username}&password=${password}`,
-        })
-          .then((response) => response.text())
-          .then((data) => {
-            console.log(data);
-            if (data === "New record created successfully") {
-              mainMenu.showGameMenu();
-            } else {
-              alert("Error signing up: " + data);
-            }
-          })
-          .catch((error) => console.error("Error:", error));
+        let user = {
+          username: username,
+          password: password,
+        };
+        console.log("signup request sent");
+        console.log(user.username, user.password);
+        socket.emit("signUpRequest", user);
+        // fetch("users.php", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/x-www-form-urlencoded",
+        //   },
+        //   body: `username=${username}&password=${password}`,
+        // })
+        // .then((response) => response.text())
+        // .then((data) => {
+        //   console.log(data);
+        //   if (data === "New record created successfully") {
+        //     mainMenu.showGameMenu();
+        //   } else {
+        //     alert("Error signing up: " + data);
+        //   }
+        // })
+        // .catch((error) => console.error("Error:", error));
       });
 
     document.getElementById("goToSignIn").addEventListener("click", () => {

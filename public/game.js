@@ -1,4 +1,4 @@
-const socket = io();
+socket = io();
 
 let role;
 let paddle_1, paddle_2, ball;
