@@ -33,13 +33,9 @@ connection.connect((err) => {
     return;
   }
   console.log("Connected to database yeah");
-  connection.query("SELECT * from users", function (err, results) {
-    if (err) throw err;
-    console.log(results);
-  });
 });
 
-// Function to update victories for a player
+// [not implemented]Function to update victories for a player
 function updateVictories(playerId) {
   const query = `UPDATE scoreboard SET Victories = victories + 1 WHERE id = ?`;
   console.log("Database!!");
@@ -54,6 +50,7 @@ function updateVictories(playerId) {
 
 let players = [];
 
+// Declear hte inital gameState
 let gameState = {
   ball: { top: "0px", left: "0px", diameter: 20 },
   paddle1: { top: "50%", height: 100, left: "20px", width: 10 },
@@ -78,12 +75,13 @@ setInterval(() => {
     startGame
   );
   startGame = false;
+  // Checks if victory condition is met and can in the future be implemented to update number of victories a user have.
   if (gameState.score1 == 9 || gameState.score2 == 9) {
     console.log("Game Over");
     if (gameState.score1 === 9) {
-      updateVictories(1); // Assuming player 1's ID is 1
+      //updateVictories(1); // Assuming player 1's ID is 1
     } else if (gameState.score2 === 9) {
-      updateVictories(2); // Assuming player 2's ID is 2
+      //updateVictories(2); // Assuming player 2's ID is 2
     }
     io.emit("gameOver"); // Emit a signal indicating game over
     player1Ready = false;
@@ -109,6 +107,7 @@ io.on("connection", (socket) => {
 
   socket.emit("assignRole", role);
 
+  // Handles the sing up request and adds a user to the database, if user already exist it return false to the client
   socket.on("signUpRequest", (user) => {
     console.log(user.username, user.password);
     console.log("signup Request Received");
@@ -129,6 +128,7 @@ io.on("connection", (socket) => {
   });
 
   let pass = false;
+  // Handels sign in request, if user infromation is correct return true to the client, if incorrect return s true
   socket.on("signInRequest", (user) => {
     console.log("SignInRequest received");
     connection.query(
@@ -138,24 +138,28 @@ io.on("connection", (socket) => {
         if (err) throw err;
         if (results.length === 0) {
           console.log("User not found");
-          // Handle user not found case, maybe send a response back to client
-          socket.emit("signInResponse", {
-            success: false,
-            message: "User not found",
-          });
+          socket.emit("check", (pass = false));
           return;
         }
         const storedPassword = results[0].Password;
 
         if (user.password === storedPassword) {
+          console.log("User found; correct password");
           socket.emit("check", (pass = true));
         } else {
+          console.log("User found; incorrect password");
           socket.emit("check", (pass = false));
         }
       }
     );
   });
 
+  socket.on("getUsers", () => {
+    connection.query("SELECT Name from users", function (err, results) {
+      if (err) throw err;
+      socket.emit("sendUsers", results);
+    });
+  });
   socket.on("ready", () => {
     if (role === "player1") {
       player1Ready = true;

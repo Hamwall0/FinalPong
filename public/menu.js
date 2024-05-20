@@ -31,11 +31,9 @@ class SignInMenu extends Menu {
   }
 
   addEventListeners() {
-    console.log(document.getElementById("username"));
     document
       .getElementById("signInForm")
       .addEventListener("submit", (event) => {
-        console.log(document.getElementById("username"));
         event.preventDefault();
         let username = document.getElementById("username").value;
         let password = document.getElementById("password").value;
@@ -44,15 +42,11 @@ class SignInMenu extends Menu {
           password: password,
         };
         socket.emit("signInRequest", user);
-        console.log("in in");
         socket.on("check", (pass) => {
-          console.log(pass);
-          if (pass == true) {
-            console.log("welcome");
+          if (pass) {
             mainMenu.showGameMenu();
           } else {
-            alert("wrong password or username");
-            console.log("fel fel ");
+            alert("Wrong username or password");
           }
         });
       });
@@ -90,15 +84,11 @@ class SignUpMenu extends Menu {
           password: password,
         };
         socket.emit("signUpRequest", user);
-        console.log("signup request sent");
-        console.log(user.username, user.password);
         socket.on("check", (pass) => {
-          console.log(pass);
-          if (pass == true) {
+          if (pass) {
             mainMenu.showGameMenu();
           } else {
             alert("Username already exists");
-            console.log("Registration Error");
           }
         });
       });
@@ -115,7 +105,7 @@ class GameMenu extends Menu {
       <div>
         <h1>Game Menu</h1>
         <button id="startGame">Start Game</button>
-        <button id="viewScoreboard">Scoreboard</button>
+        <button id="viewScoreboard">Players</button>
       </div>
     `;
   }
@@ -135,22 +125,42 @@ class GameMenu extends Menu {
 }
 
 class ScoreboardMenu extends Menu {
+  constructor(mainElement) {
+    super(mainElement);
+    this.scoreboard = [];
+  }
+
   render() {
     return `
       <div>
-        <h1>Scoreboard</h1>
-        <div id="scoreboard">
-          <!-- Scoreboard content goes here -->
-        </div>
+        <h1>Players</h1>
         <button id="backToGameMenu">Back</button>
+        <p id="scoreboard"></p>
       </div>
     `;
   }
 
   addEventListeners() {
+    socket.emit("getUsers");
+    socket.on("sendUsers", (result) => {
+      this.scoreboard = result;
+      this.updateScoreboard();
+    });
+
     document.getElementById("backToGameMenu").addEventListener("click", () => {
       mainMenu.showGameMenu();
     });
+  }
+
+  updateScoreboard() {
+    const scoreboardElement = document.getElementById("scoreboard");
+    if (scoreboardElement) {
+      scoreboardElement.innerHTML = this.scoreboard
+        .map((user) => `<div>Name:${user.Name}</div>`)
+        .join("");
+    } else {
+      console.error("Scoreboard element not found");
+    }
   }
 }
 

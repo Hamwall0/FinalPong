@@ -30,8 +30,9 @@ socket.on("gameStateUpdate", (data) => {
   document.getElementById("score_2").innerText = parseInt(data.score2);
 });
 
-let gameExist = false;
+let gameExist = false; //variable to check if the game exists
 
+// function to start the game, if the game alrady exists the game will show if previusly hidden
 function startGame() {
   if (!gameExist) {
     const map = document.querySelector(".map");
@@ -56,9 +57,6 @@ function startGame() {
 
     ball = document.querySelector(".ball");
     ball.style.position = "absolute";
-
-    // const initialTop = Math.random() * (mapHeight - ball.clientHeight);
-    // const initialLeft = Math.random() * (mapWidth - ball.clientWidth);
     ball.style.top = initialTop + "px";
     ball.style.left = initialLeft + "px";
 
@@ -68,9 +66,9 @@ function startGame() {
     showGameObjects();
   }
 }
-
+// This function handle key down events and moves the paddels. It also makes sure that player1 only move paddle1 and player2 can move paddle 2.
 function handleKeyDown(event) {
-  if (role === "spectator") return;
+  if (role === "spectator") return; // If you are a spectator you can't do anything
 
   const key = event.key.toLowerCase();
   const paddle_1Style = getComputedStyle(paddle_1);
@@ -115,7 +113,7 @@ function handleKeyDown(event) {
 
   emitGameState();
 }
-
+// emitGameState sends all game data from the client to the server
 function emitGameState() {
   socket.emit("gameState", {
     ball: {
