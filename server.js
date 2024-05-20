@@ -34,7 +34,8 @@ connection.connect((err) => {
 
 // Function to update victories for a player
 function updateVictories(playerId) {
-  const query = `UPDATE players SET victories = victories + 1 WHERE id = ?`;
+  //const query = `UPDATE players SET victories = victories + 1 WHERE id = ?`;
+  const query = `UPDATE scoreboard SET Victories = victories + 1 WHERE id = ?`;
   console.log("Database!!")
   connection.query(query, [playerId], (err, results) => {
     if (err) {
