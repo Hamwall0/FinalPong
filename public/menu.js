@@ -9,7 +9,7 @@ class Menu {
   }
 
   render() {
-    return '';
+    return "";
   }
 
   addEventListeners() {}
@@ -31,13 +31,14 @@ class SignInMenu extends Menu {
   }
 
   addEventListeners() {
-    document.getElementById('signInForm').addEventListener('submit', (event) => {
-      event.preventDefault();
-      // Handle sign in
-      mainMenu.showGameMenu();
-    });
+    document
+      .getElementById("signInForm")
+      .addEventListener("submit", (event) => {
+        event.preventDefault();
+        mainMenu.showGameMenu();
+      });
 
-    document.getElementById('goToSignUp').addEventListener('click', () => {
+    document.getElementById("goToSignUp").addEventListener("click", () => {
       mainMenu.showSignUpMenu();
     });
   }
@@ -59,13 +60,33 @@ class SignUpMenu extends Menu {
   }
 
   addEventListeners() {
-    document.getElementById('signUpForm').addEventListener('submit', (event) => {
-      event.preventDefault();
-      // Handle sign up
-      mainMenu.showGameMenu();
-    });
+    document
+      .getElementById("signUpForm")
+      .addEventListener("submit", (event) => {
+        event.preventDefault();
+        let username = document.getElementById("newUsername").value;
+        let password = document.getElementById("newPassword").value;
 
-    document.getElementById('goToSignIn').addEventListener('click', () => {
+        fetch("users.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `username=${username}&password=${password}`,
+        })
+          .then((response) => response.text())
+          .then((data) => {
+            console.log(data);
+            if (data === "New record created successfully") {
+              mainMenu.showGameMenu();
+            } else {
+              alert("Error signing up: " + data);
+            }
+          })
+          .catch((error) => console.error("Error:", error));
+      });
+
+    document.getElementById("goToSignIn").addEventListener("click", () => {
       mainMenu.showSignInMenu();
     });
   }
@@ -83,18 +104,14 @@ class GameMenu extends Menu {
   }
 
   addEventListeners() {
-    document.getElementById('startGame').addEventListener('click', () => {
-      // Hide menu and show game
-      document.querySelector('.map').style.display = 'block';
+    document.getElementById("startGame").addEventListener("click", () => {
+      document.querySelector(".map").style.display = "block";
       mainMenu.hide();
-      socket.emit('ready');
-      console.log("Före")
+      socket.emit("ready");
       startGame();
-      console.log("efter")
     });
 
-    document.getElementById('viewScoreboard').addEventListener('click', () => {
-      // Handle view scoreboard
+    document.getElementById("viewScoreboard").addEventListener("click", () => {
       mainMenu.showScoreboard();
     });
   }
@@ -114,7 +131,7 @@ class ScoreboardMenu extends Menu {
   }
 
   addEventListeners() {
-    document.getElementById('backToGameMenu').addEventListener('click', () => {
+    document.getElementById("backToGameMenu").addEventListener("click", () => {
       mainMenu.showGameMenu();
     });
   }
@@ -146,9 +163,9 @@ class MainMenu {
   }
 
   hide() {
-    this.mainElement.innerHTML = '';
+    this.mainElement.innerHTML = "";
   }
 }
 
-const mainMenu = new MainMenu(document.getElementById('mainMenu'));
+const mainMenu = new MainMenu(document.getElementById("mainMenu"));
 mainMenu.showSignInMenu();
