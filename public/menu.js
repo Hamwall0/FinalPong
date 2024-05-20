@@ -1,5 +1,3 @@
-socket = io();
-
 class Menu {
   constructor(mainElement) {
     this.mainElement = mainElement;
@@ -38,8 +36,14 @@ class SignInMenu extends Menu {
       .addEventListener("submit", (event) => {
         event.preventDefault();
         mainMenu.showGameMenu();
-        let username = document.getElementById("newUsername").value;
-        let password = document.getElementById("newPassword").value;
+        let username = document.getElementById("username").value;
+        let password = document.getElementById("password").value;
+        let user = {
+          username: username,
+          password: password,
+        };
+        socket.emit("signInRequest", user);
+        console.log("in in ");
       });
 
     document.getElementById("goToSignUp").addEventListener("click", () => {
@@ -68,15 +72,16 @@ class SignUpMenu extends Menu {
       .getElementById("signUpForm")
       .addEventListener("submit", (event) => {
         event.preventDefault();
+        mainMenu.showGameMenu();
         let username = document.getElementById("newUsername").value;
         let password = document.getElementById("newPassword").value;
         let user = {
           username: username,
           password: password,
         };
+        socket.emit("signUpRequest", user);
         console.log("signup request sent");
         console.log(user.username, user.password);
-        socket.emit("signUpRequest", user);
         // fetch("users.php", {
         //   method: "POST",
         //   headers: {

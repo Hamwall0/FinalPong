@@ -3,11 +3,13 @@ const http = require("http");
 const express = require("express");
 const socketIO = require("socket.io");
 const mysql = require("mysql");
+const moveBall = require("./ball.js");
+const { score1, score2 } = require("./ball.js");
 
 const port = 3000;
-let app = express();
-let server = http.createServer(app);
-let io = socketIO(server); // Properly define 'io' here
+const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
 
 const publicPath = path.join(__dirname, "/public");
 app.use(express.static(publicPath));
@@ -37,9 +39,63 @@ connection.connect((err) => {
   });
 });
 
+// Function to update victories for a player
+function updateVictories(playerId) {
+  const query = `UPDATE scoreboard SET Victories = victories + 1 WHERE id = ?`;
+  console.log("Database!!");
+  connection.query(query, [playerId], (err, results) => {
+    if (err) {
+      console.error("Error updating victories:", err);
+      return;
+    }
+    console.log("Victories updated for player with id", playerId);
+  });
+}
+
+let players = [];
+
+let gameState = {
+  ball: { top: "0px", left: "0px", diameter: 20 },
+  paddle1: { top: "50%", height: 100, left: "20px", width: 10 },
+  paddle2: { top: "50%", height: 100, left: "570px", width: 10 },
+  map: { height: 600, width: 800 },
+  score1: score1,
+  score2: score2,
+};
+
+let player1 = null;
+let player2 = null;
+let player1Ready = false;
+let player2Ready = false;
+let startGame = false;
+
+setInterval(() => {
+  gameState = moveBall(
+    gameState.ball,
+    gameState.paddle1,
+    gameState.paddle2,
+    gameState.map,
+    startGame
+  );
+  startGame = false;
+  if (gameState.score1 == 9 || gameState.score2 == 9) {
+    console.log("Game Over");
+    if (gameState.score1 === 9) {
+      updateVictories(1); // Assuming player 1's ID is 1
+    } else if (gameState.score2 === 9) {
+      updateVictories(2); // Assuming player 2's ID is 2
+    }
+    io.emit("gameOver"); // Emit a signal indicating game over
+    player1Ready = false;
+    player2Ready = false;
+  }
+  io.emit("gameStateUpdate", gameState);
+}, 25);
+
 io.on("connection", (socket) => {
   console.log("A user just connected.", socket.id);
 
+  // Assign a role to the connected user
   let role;
   if (!player1) {
     player1 = socket.id;
@@ -52,6 +108,35 @@ io.on("connection", (socket) => {
   }
 
   socket.emit("assignRole", role);
+
+  socket.on("signUpRequest", (user) => {
+    console.log(user.username, user.password);
+    console.log("signup Request Received");
+    connection.query(
+      "INSERT INTO users (name, password) VALUES (?, ?)",
+      [user.username, user.password],
+      function (err) {
+        if (err) {
+          console.log("registration Fail");
+          //socket.emit("registrationFail")
+          throw err;
+        }
+        console.log("Registration Success!");
+        players[socket.id] = { username: user.username }; // Store username
+      }
+    );
+  });
+
+  socket.on("signInRequest", (user) => {
+    connection.query(
+      "SELECT Name FROM users WHERE name = '" + user.username + "' ",
+      function (err, results) {
+        if (err) throw err;
+        console.log("hej hej ");
+        console.log(results);
+      }
+    );
+  });
 
   socket.on("ready", () => {
     if (role === "player1") {
@@ -94,78 +179,4 @@ io.on("connection", (socket) => {
     startGame = false;
     io.emit("gameStateUpdate", gameState);
   });
-
-  socket.on("signUpRequest", (user) => {
-    console.log(user.username, user.password);
-    console.log("signup Request Received");
-    connection.query(
-      "INSERT INTO users (name, password) VALUES (?, ?)",
-      [user.username, user.password],
-      function (err) {
-        if (err) {
-          console.log("registration Fail");
-          //socket.emit("registrationFail")
-          throw err;
-        }
-        console.log("Registration Success!");
-        //socket.emit("registrationSuccess")
-      }
-    );
-  });
 });
-
-// Function to update victories for a player
-function updateVictories(playerId) {
-  const query = `UPDATE scoreboard SET Victories = Victories + 1 WHERE id = ?`;
-  console.log("Database!!");
-  connection.query(query, [playerId], (err, results) => {
-    if (err) {
-      console.error("Error updating victories:", err);
-      return;
-    }
-    console.log("Victories updated for player with id", playerId);
-  });
-}
-
-const moveBall = require("./ball.js");
-const { score1, score2 } = require("./ball.js");
-
-let players = [];
-
-let gameState = {
-  ball: { top: "0px", left: "0px", diameter: 20 },
-  paddle1: { top: "50%", height: 100, left: "20px", width: 10 },
-  paddle2: { top: "50%", height: 100, left: "570px", width: 10 },
-  map: { height: 600, width: 800 },
-  score1: score1,
-  score2: score2,
-};
-
-let player1 = null;
-let player2 = null;
-let player1Ready = false;
-let player2Ready = false;
-let startGame = false;
-
-setInterval(() => {
-  gameState = moveBall(
-    gameState.ball,
-    gameState.paddle1,
-    gameState.paddle2,
-    gameState.map,
-    startGame
-  );
-  startGame = false;
-  if (gameState.score1 == 9 || gameState.score2 == 9) {
-    console.log("Game Over");
-    if (gameState.score1 === 9) {
-      updateVictories(1); // Assuming player 1's ID is 1
-    } else if (gameState.score2 === 9) {
-      updateVictories(2); // Assuming player 2's ID is 2
-    }
-    io.emit("gameOver"); // Emit a signal indicating game over
-    player1Ready = false;
-    player2Ready = false;
-  }
-  io.emit("gameStateUpdate", gameState);
-}, 25);
