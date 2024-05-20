@@ -1,5 +1,5 @@
 const randomSpeed = Math.random() * 13 + 10;
-let randomAngle = (Math.random() * Math.PI) / 2; // Corrected angle calculation
+let randomAngle = (Math.random() * Math.PI) / 3; // Corrected angle calculation
 
 let dx = 0;
 let dy = 0;
@@ -54,14 +54,14 @@ function moveBall(ball, paddle_1, paddle_2, map, startGame) {
   if (ballLeft < 0) {
     ballLeft = mapWidth / 2; // Reset ball position
     ballTop = mapHeight / 2;
-    randomAngle = (Math.random() * Math.PI) / 2; // New direction for ball
+    randomAngle = (Math.random() * Math.PI) / 3; // New direction for ball
     dx = Math.cos(randomAngle) * randomSpeed; // Reset ball direction and speed
     dy = Math.sin(randomAngle) * randomSpeed;
     score1 += 1;
   } else if (ballLeft > mapWidth - ballHeight) {
     ballLeft = mapWidth / 2; // Reset ball position
     ballTop = mapHeight / 2;
-    randomAngle = (Math.random() * Math.PI) / 2; // New direction for ball
+    randomAngle = (Math.random() * Math.PI) / 3; // New direction for ball
     dx = Math.cos(randomAngle) * randomSpeed; // Reset ball direction and speed
     dy = Math.sin(randomAngle) * randomSpeed;
     score2 += 1;

@@ -105,7 +105,7 @@ class GameMenu extends Menu {
       <div>
         <h1>Game Menu</h1>
         <button id="startGame">Start Game</button>
-        <button id="viewScoreboard">Players</button>
+        <button id="viewScoreboard">Registered Players</button>
       </div>
     `;
   }
@@ -133,7 +133,7 @@ class ScoreboardMenu extends Menu {
   render() {
     return `
       <div>
-        <h1>Players</h1>
+        <h1>Registered Players</h1>
         <button id="backToGameMenu">Back</button>
         <p id="scoreboard"></p>
       </div>
