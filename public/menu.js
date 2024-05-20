@@ -31,11 +31,12 @@ class SignInMenu extends Menu {
   }
 
   addEventListeners() {
+    console.log(document.getElementById("username"));
     document
       .getElementById("signInForm")
       .addEventListener("submit", (event) => {
+        console.log(document.getElementById("username"));
         event.preventDefault();
-        mainMenu.showGameMenu();
         let username = document.getElementById("username").value;
         let password = document.getElementById("password").value;
         let user = {
@@ -43,7 +44,17 @@ class SignInMenu extends Menu {
           password: password,
         };
         socket.emit("signInRequest", user);
-        console.log("in in ");
+        console.log("in in");
+        socket.on("check", (pass) => {
+          console.log(pass);
+          if (pass == true) {
+            console.log("welcome");
+            mainMenu.showGameMenu();
+          } else {
+            alert("wrong password or username");
+            console.log("fel fel ");
+          }
+        });
       });
 
     document.getElementById("goToSignUp").addEventListener("click", () => {
@@ -72,7 +83,6 @@ class SignUpMenu extends Menu {
       .getElementById("signUpForm")
       .addEventListener("submit", (event) => {
         event.preventDefault();
-        mainMenu.showGameMenu();
         let username = document.getElementById("newUsername").value;
         let password = document.getElementById("newPassword").value;
         let user = {
@@ -82,23 +92,15 @@ class SignUpMenu extends Menu {
         socket.emit("signUpRequest", user);
         console.log("signup request sent");
         console.log(user.username, user.password);
-        // fetch("users.php", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/x-www-form-urlencoded",
-        //   },
-        //   body: `username=${username}&password=${password}`,
-        // })
-        // .then((response) => response.text())
-        // .then((data) => {
-        //   console.log(data);
-        //   if (data === "New record created successfully") {
-        //     mainMenu.showGameMenu();
-        //   } else {
-        //     alert("Error signing up: " + data);
-        //   }
-        // })
-        // .catch((error) => console.error("Error:", error));
+        socket.on("check", (pass) => {
+          console.log(pass);
+          if (pass == true) {
+            mainMenu.showGameMenu();
+          } else {
+            alert("Username already exists");
+            console.log("Registration Error");
+          }
+        });
       });
 
     document.getElementById("goToSignIn").addEventListener("click", () => {

@@ -118,8 +118,9 @@ io.on("connection", (socket) => {
       function (err) {
         if (err) {
           console.log("registration Fail");
-          //socket.emit("registrationFail")
-          throw err;
+          socket.emit("check", (pass = false));
+        } else {
+          socket.emit("check", (pass = true));
         }
         console.log("Registration Success!");
         players[socket.id] = { username: user.username }; // Store username
@@ -127,13 +128,30 @@ io.on("connection", (socket) => {
     );
   });
 
+  let pass = false;
   socket.on("signInRequest", (user) => {
+    console.log("SignInRequest received");
     connection.query(
-      "SELECT Name FROM users WHERE name = '" + user.username + "' ",
+      "SELECT Password FROM users WHERE Name = ?",
+      [user.username],
       function (err, results) {
         if (err) throw err;
-        console.log("hej hej ");
-        console.log(results);
+        if (results.length === 0) {
+          console.log("User not found");
+          // Handle user not found case, maybe send a response back to client
+          socket.emit("signInResponse", {
+            success: false,
+            message: "User not found",
+          });
+          return;
+        }
+        const storedPassword = results[0].Password;
+
+        if (user.password === storedPassword) {
+          socket.emit("check", (pass = true));
+        } else {
+          socket.emit("check", (pass = false));
+        }
       }
     );
   });
